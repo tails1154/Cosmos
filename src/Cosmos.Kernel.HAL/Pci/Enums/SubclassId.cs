@@ -4,6 +4,9 @@ namespace Cosmos.Kernel.HAL.Pci.Enums;
 
 internal enum SubclassId
 {
+    // SerialBusController:
+    UniversalSerialBus = 0x03,
+
     // MassStorageController:
     ScsiStorageController = 0x00,
     IdeInterface = 0x01,

@@ -17,6 +17,7 @@ using Cosmos.Kernel.HAL.X64.Devices.Clock;
 using Cosmos.Kernel.HAL.X64.Devices.Input;
 using Cosmos.Kernel.HAL.X64.Devices.Network;
 using Cosmos.Kernel.HAL.X64.Devices.Timer;
+using Cosmos.Kernel.HAL.X64.Devices.Usb;
 
 namespace Cosmos.Kernel.HAL.X64;
 
@@ -29,6 +30,7 @@ internal class X64PlatformInitializer : IPlatformInitializer
     private RTC? _rtc;
     private PS2Controller? _ps2Controller;
     private E1000E? _networkDevice;
+    private XhciController? _xhciController;
 
     public string PlatformName => "x86-64";
     public PlatformArchitecture Architecture => PlatformArchitecture.X64;
@@ -108,6 +110,14 @@ internal class X64PlatformInitializer : IPlatformInitializer
             Serial.WriteString("[X64HAL] Initializing PS/2 controller...\n");
             _ps2Controller = new PS2Controller();
             _ps2Controller.Initialize();
+
+            // Discover xHCI without binding it yet. USB HID transfer support
+            // is staged separately so PS/2 remains a safe fallback.
+            if (CosmosFeatures.PCIEnabled)
+            {
+                Serial.WriteString("[X64HAL] Looking for xHCI USB controller...\n");
+                _xhciController = XhciController.Find();
+            }
         }
 
         // Try to find E1000E network device (if network feature enabled)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace DevKernel.Shell;
 
@@ -96,7 +97,20 @@ internal sealed class CommandShell
             return;
         }
 
-        command.Execute(context, args);
+        TextWriter originalOutput = Console.Out;
+        // Keep the pager scoped to one command. The boot banner and the next
+        // shell prompt remain immediate, while long command output pauses.
+        var pagedOutput = new PagedTextWriter(originalOutput, pageLines: 20);
+        Console.SetOut(pagedOutput);
+        try
+        {
+            command.Execute(context, args);
+        }
+        finally
+        {
+            pagedOutput.Flush();
+            Console.SetOut(originalOutput);
+        }
     }
 
     /// <summary>Reports how <paramref name="command"/> should have been invoked.</summary>

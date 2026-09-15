@@ -43,6 +43,14 @@ internal static class GraphicsCommands
             },
             new ShellCommand
             {
+                Name = "desktop",
+                Aliases = ["gui", "startgui"],
+                Usage = "desktop",
+                Description = "Launch the CosmosOS graphical desktop (Esc to exit)",
+                Execute = static (context, args) => DesktopEnvironment.Run(),
+            },
+            new ShellCommand
+            {
                 Name = "cube",
                 Usage = "cube",
                 Description = "Spinning 3D cube rolled by the mouse (VMware SVGA II only, Esc to exit)",
